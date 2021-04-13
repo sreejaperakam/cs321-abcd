@@ -48,7 +48,7 @@
 
 <br>
 <br>
-<p>This site was updated to PHP format by the students of SILC CS321 (PHP) class.</p>
+<p>This site is developed in PHP by the students of SILC CS321 (PHP) class.</p>
     </div>
 </body>
 </html>

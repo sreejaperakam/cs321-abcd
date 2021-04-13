@@ -6,9 +6,9 @@ require_once "config.php";
 
 // Define variables and initialize with empty values
 
-$name = $description = $type = $did_you_know =  $state_name = $key_words = $image = "";
+$name = $description = $type = $did_you_know =  $state_name = $key_words = $image = $fileToUpload = "";
 
-$name_err = $description_err = $type_err = $did_you_know_err = $state_name_err = $key_words_err = $image_err "";
+$name_err = $description_err = $type_err = $did_you_know_err = $state_name_err = $key_words_err = $image_err = "";
 
 // Processing form data when form is submitted
 
@@ -99,6 +99,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
     }
     $imageName = basename($_FILES["fileToUpload"]["name"]);
+    echo $imageName;
+    if(empty($imageName)){
+        $image_err = "Please enter the image."; 
+    } else {
     $target_dir = "images/dance_images/";
 
         $target_file = $target_dir . $imageName;
@@ -111,11 +115,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             if($check !== false) {
                 $uploadOk = 1;
             } else {
-                header('location: create_dress.php?create_dress=fileRealFailed');
+                $image_err = "Please enter the image."; 
                 $uploadOk = 0;
             }
         }
-
+    }
     // Check input errors before inserting in database
 
     if(empty($name_err) && empty($description_err) && empty($type_err) && empty($did_you_know_err) && empty($state_name_err) && empty($key_words_err) ){
@@ -272,6 +276,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
                          <input style=width:400px type="file" onchange="loadFile(event)" name="fileToUpload" id="fileToUpload" accept="image/jpg, image/jpeg, image/png" title="Please enter an image file" value="<?php echo $fileToUpload; ?>"></input><br>
                             <img id="output" width="200" />
+                            <span class="help-block"><?php echo $image_err;?></span>
                          </div>
                          
 

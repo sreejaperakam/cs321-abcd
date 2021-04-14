@@ -6,7 +6,7 @@ $cookie_display= "dances_count";
 $cookie_dvalue= "10";
 
 $cookie_favdance= "fav_dance";
-$cookie_fvalue= "Kuchpudi";
+$cookie_fvalue= "Kuchipudi";
 
 if(isset($_COOKIE[$cookie_row])) {
     

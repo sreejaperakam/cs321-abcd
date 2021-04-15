@@ -3,11 +3,10 @@
 require_once "config.php";
  
 // Define variables and initialize with empty values
-$name = $description = $type = $did_you_know =  $state_name = $key_words = $image = "";
+$name = $description = $type = $did_you_know =  $state_name = $key_words = $fileToUpload = $oldImage = "";
 
 $name_err = $description_err = $type_err = $did_you_know_err = $state_name_err = $key_words_err = $image_err = "";
 
- 
 // Processing form data when form is submitted
 if(isset($_POST["id"]) && !empty($_POST["id"])){
     // Get hidden input value
@@ -65,19 +64,35 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
 
 
     // Validate image
-    $input_image = trim($_POST["image"]);
-    if(empty($input_image)){
-        $image_err = "Please enter the image.";     
-    }else{
-        $image = $input_image;
+    $image = basename($_FILES["fileToUpload"]["name"]);
+    if(empty($image)){
+        $image = $_POST["oldimage"];
     }
+    if(empty($image)){
+        $image_err = "Please enter the image."; 
+    } else {
+    $target_dir = "images/dance_images/";
 
+        $target_file = $target_dir . $image;
+
+        $uploadOk = 1;
+        $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+        // Check if image file is a actual image or fake image
+        if(isset($_POST["submit"])) {
+            $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
+            if($check !== false) {
+                $uploadOk = 1;
+            } else {
+                $image_err = "Please enter the image."; 
+                $uploadOk = 0;
+            }
+        }
+    }
     // Check input errors before inserting in database
     if(empty($name_err) && empty($description_err) && empty($type_err) && empty($did_you_know_err) && empty($state_name_err) && empty($key_words_err) && empty($image_err)){
         // Prepare an update statement
         $sql = "UPDATE dances SET name='$name', description='$description', type='$type', did_you_know ='$did_you_know', state_name= '$state_name', key_words='$key_words', image_url='$image' WHERE id='$id'";
         // Executing and getting results
-        echo $sql;
         $mysqli_result = mysqli_query($link, $sql); 
         // Checking results
         if($mysqli_result){
@@ -115,7 +130,6 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                 $state_name = $row["state_name"];
                 $key_words = $row["key_words"];
                 $image = $row["image_url"];
-
             } else{
                 // URL doesn't contain valid id. Redirect to error page
                 header("location: error.php");
@@ -135,26 +149,32 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
     }
 }
 ?>
- 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Update Record</title>
+     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.css">
-    <style type="text/css">
+   <style type="text/css">
         .wrapper{
             width: 1000px;
             margin: 0 auto;
         }
     </style>
+     <script>
+     var loadFile = function(event) {
+        var image = document.getElementById('output');
+        image.src = URL.createObjectURL(event.target.files[0]);
+    };
+    </script>
 </head>
 <body>
     <div class="wrapper">
         <div class="container-fluid">
-        <?php
+             <?php
                // Include header and nav bar files
                require_once "header.php";
                require_once "nav_bar.php";
@@ -165,7 +185,7 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                         <h2>Update Record</h2>
                     </div>
                     <p>Please edit the input values and submit to update the record.</p>
-                    <form action="update.php" method="post">
+                    <form action="update.php" method="post" enctype="multipart/form-data">
                         <div class="form-group <?php echo (!empty($name_err)) ? 'has-error' : ''; ?>">
                             <label>Name</label>
                             <input type="text" name="name" class="form-control" value="<?php echo $name; ?>">
@@ -198,7 +218,10 @@ if(isset($_POST["id"]) && !empty($_POST["id"])){
                         </div>
                         <div class="form-group <?php echo (!empty($image_err)) ? 'has-error' : ''; ?>">
                             <label>Image</label>
-                            <textarea name="image" class="form-control"><?php echo $image; ?></textarea>
+                             <img  src="images/dance_images/<?php echo $image; ?>" width= "100" height= "100" alt="<?php echo $image; ?>">
+                         </div>
+                            <input style=width:400px type="file" name="fileToUpload" id="fileToUpload" accept="image/jpg, image/jpeg, image/png" title="Please enter an image file" value="<?php echo $image; ?>"></input><br>
+                            <input type="hidden" class="form-control" name="oldimage" value="<?php echo $image; ?>">
                             <span class="help-block"><?php echo $image_err;?></span>
                         </div>
                         <input type="hidden" name="id" value="<?php echo $id; ?>"/>

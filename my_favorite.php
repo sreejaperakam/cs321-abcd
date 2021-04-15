@@ -76,9 +76,9 @@ else{
     $favoriteDanceName = $_COOKIE[$cookie_name];
     $fav_status = "COOKIE_N_DANCE_ARE_FOUND";
     $sql_query = "SELECT `id` FROM dances WHERE `name` = '$favoriteDanceName'";
-    echo "$sql_query";
+    //echo "$sql_query";
     $mysqli_result = $link->query($sql_query);
- print_r($mysqli_result);
+ //print_r($mysqli_result);
     // If the dance doesn't exist, we will get EMPTY result_set
     $num_rows = mysqli_num_rows($mysqli_result);
     if ($num_rows>0) {
@@ -97,7 +97,7 @@ else{
     } 
 }
 // By the time we come here, we will have either system default or correct preferrence from cookie
-header('location: read.php?id='.$id);
+header('Location: read.php?id='.$id);
 
 ?>
     </div>
